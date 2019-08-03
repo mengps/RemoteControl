@@ -17,12 +17,10 @@ public:
     Q_INVOKABLE void setDestAddr(const QHostAddress &addr) { m_destAddr = addr; }
 
     Q_INVOKABLE void finish();
-    Q_INVOKABLE void writeToSocket(const RemoteEvent &event);
-    Q_INVOKABLE void writeToSocket(const QByteArray &d, qint8 blockType);
+    Q_INVOKABLE void writeToSocket(const QByteArray &d);
 
 signals:
     void hasScreenData(const QByteArray &screenData);
-    void hasEventData(const RemoteEvent &event);
 
 private slots:
     void processRecvData();

@@ -1,4 +1,5 @@
 #include "controlled.h"
+#include "connection.h"
 #include "remoteevent.h"
 #include "socket.h"
 
@@ -21,23 +22,14 @@
 #endif
 
 Controlled::Controlled(QObject *parent)
-    : QObject (parent)
+    : QTcpServer (parent)
 {
-    m_controlled = new Socket;
-    m_controlled->setDestAddr(QHostAddress("127.0.0.1"));
-    m_controlled->bind(QHostAddress::Any, 43801);
-
+    listen(QHostAddress::Any, 43801);
+    m_screenSocket = new Socket;
     QThread *thread = new QThread;
     connect(thread, &QThread::finished, thread, &QThread::deleteLater);
-    connect(m_controlled, &Socket::hasEventData, this, [this](const RemoteEvent &event)
-    {
-        processEvent(event);
-    });
-    m_controlled->moveToThread(thread);
+    m_screenSocket->moveToThread(thread);
     thread->start();
-
-    if (!m_timerId)
-        m_timerId = startTimer(100);
 }
 
 Controlled::~Controlled()
@@ -97,7 +89,7 @@ void Controlled::processEvent(const RemoteEvent &ev)
 void Controlled::timerEvent(QTimerEvent *event)
 {
     Q_UNUSED(event);
-    if (m_controlled)
+    if (m_screenSocket)
     {
         QBuffer buffer;
         buffer.open(QIODevice::WriteOnly);
@@ -107,8 +99,37 @@ void Controlled::timerEvent(QTimerEvent *event)
         QPixmap pixmap = QGuiApplication::primaryScreen()->grabWindow(0);
         pixmap.save(&buffer, "jpg", -1);
 #endif
-        QMetaObject::invokeMethod(m_controlled, "writeToSocket", Q_ARG(QByteArray, buffer.data()),
-                                  Q_ARG(qint8, SCREEN_TYPE));
+        QMetaObject::invokeMethod(m_screenSocket, "writeToSocket", Q_ARG(QByteArray, buffer.data()));
+    }
+}
+
+void Controlled::incomingConnection(qintptr socketDescriptor)
+{
+    if (!m_connection)
+    {
+        m_connection = new Connection(this);
+        m_connection->setSocketDescriptor(socketDescriptor);
+        connect(m_connection, &Connection::connected, this, [this]()
+        {
+            emit hasRemoteConnection();
+        });
+        connect(m_connection, &Connection::disconnected, this, [this]()
+        {
+            m_connection->deleteLater();
+            m_connection = nullptr;
+            QMetaObject::invokeMethod(m_screenSocket, "finish");
+            killTimer(m_timerId);
+            m_timerId = 0;
+        });
+        connect(m_connection, &Connection::hasEventData, this, [this](const RemoteEvent &event)
+        {
+            processEvent(event);
+        });
+        QMetaObject::invokeMethod(m_screenSocket, "setDestAddr",
+                                  Q_ARG(QHostAddress, QHostAddress(m_connection->peerAddress())));
+
+        if (!m_timerId)
+            m_timerId = startTimer(std::chrono::milliseconds(40));
     }
 }
 

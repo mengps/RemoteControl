@@ -1,12 +1,13 @@
 #ifndef CONTROLLED_H
 #define CONTROLLED_H
 
-#include "protocol.h"
 #include <QObject>
+#include <QTcpServer>
 
 class Socket;
 class RemoteEvent;
-class Controlled : public QObject
+class Connection;
+class Controlled : public QTcpServer
 {
     Q_OBJECT
 
@@ -22,12 +23,14 @@ public slots:
 
 protected:
     void timerEvent(QTimerEvent *event);
+    void incomingConnection(qintptr socketDescriptor);
 
 private:
     QPixmap grabScreen();
 
-    Socket *m_controlled = nullptr;
     int m_timerId = 0;
+    Socket *m_screenSocket = nullptr;
+    Connection *m_connection = nullptr;
 };
 
 #endif // CONTROLLED_H

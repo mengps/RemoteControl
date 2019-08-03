@@ -1,9 +1,9 @@
 #include "protocol.h"
+#include "remoteevent.h"
 
-QDataStream &operator>>(QDataStream &in, DataBlock &block)
+QDataStream &operator>>(QDataStream &in, ScreenDataBlock &block)
 {
-    in >> block.blockType
-       >> block.blockSize
+    in >> block.blockSize
        >> block.blockIndex
        >> block.blockNum
        >> block.data;
@@ -11,10 +11,9 @@ QDataStream &operator>>(QDataStream &in, DataBlock &block)
     return in;
 }
 
-QDataStream &operator<<(QDataStream &out, DataBlock &block)
+QDataStream &operator<<(QDataStream &out, const ScreenDataBlock &block)
 {
-    out << block.blockType
-        << block.blockSize
+    out << block.blockSize
         << block.blockIndex
         << block.blockNum
         << block.data;
@@ -22,10 +21,28 @@ QDataStream &operator<<(QDataStream &out, DataBlock &block)
     return out;
 }
 
-QDebug operator<<(QDebug debug, const DataBlock &block)
+QDataStream &operator>>(QDataStream &in, RemoteEvent &block)
 {
-    debug << "[blockType]: "  << block.blockType   << endl
-          << "[blockSize]: "  << block.blockSize   << endl
+    qint32 type;
+    QPointF position;
+    in >> type >> position;
+    block.setType(RemoteEvent::EventType(type));
+    block.setPosition(position);
+
+    return in;
+}
+
+QDataStream &operator<<(QDataStream &out, const RemoteEvent &block)
+{
+    out << qint32(block.type())
+        << block.position();
+
+    return out;
+}
+
+QDebug operator<<(QDebug debug, const ScreenDataBlock &block)
+{
+    debug << "[blockSize]: "  << block.blockSize   << endl
           << "[blockIndex]: " << block.blockIndex  << endl
           << "[blockNum]: "   << block.blockNum    << endl
           << "[data size]: "  << block.data.size() << endl;

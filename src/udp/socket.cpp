@@ -5,7 +5,7 @@
 #include <QThread>
 #include <QTime>
 
-const int maxBlockSize = 8000;
+const int maxBlockSize = 4096;
 
 Socket::Socket(QObject *parent)
     : QUdpSocket (parent)
@@ -23,7 +23,7 @@ void Socket::finish()
     m_destAddr = QHostAddress();
 }
 
-void Socket::writeToSocket(const QByteArray &d, qint8 blockType)
+void Socket::writeToSocket(const QByteArray &d)
 {
     static QTime time = QTime::currentTime();
     static int frame = 0;
@@ -49,8 +49,7 @@ void Socket::writeToSocket(const QByteArray &d, qint8 blockType)
 
         while (currentIndex < blockNum)
         {
-            DataBlock block;
-            block.blockType = blockType;
+            ScreenDataBlock block;
             block.blockIndex = currentIndex + 1;
             block.blockNum = blockNum;
             block.blockSize = blockSize;
@@ -59,7 +58,7 @@ void Socket::writeToSocket(const QByteArray &d, qint8 blockType)
             out.device()->seek(0);
             out << block;
             writeDatagram(data, m_destAddr, 43800);
-            QThread::usleep(1);
+            QThread::usleep(1); //避免发送过快
 
             data.clear();
             blockOffset += maxBlockSize;
@@ -67,15 +66,6 @@ void Socket::writeToSocket(const QByteArray &d, qint8 blockType)
         }
         frame++;
     }
-}
-
-void Socket::writeToSocket(const RemoteEvent &event)
-{
-    QByteArray data;
-    QDataStream out(&data, QIODevice::WriteOnly);
-    out.setVersion(QDataStream::Qt_5_12);
-    out << qint32(event.type()) << event.position();;
-    writeToSocket(data, EVENT_TYPE);
 }
 
 void Socket::processRecvData()
@@ -89,7 +79,7 @@ void Socket::processRecvData()
         QNetworkDatagram datagram = receiveDatagram();
         QByteArray data  = datagram.data();
 
-        DataBlock block;
+        ScreenDataBlock block;
         QDataStream in(&data, QIODevice::ReadOnly);
         in >> block;
 
@@ -104,8 +94,7 @@ void Socket::processRecvData()
 
             if (block.blockIndex == block.blockNum && blockSize == block.blockSize)
             {
-                if (block.blockType == SCREEN_TYPE)
-                    emit hasScreenData(recvData);
+                emit hasScreenData(recvData);
 
                 currentIndex = 1;
                 blockSize = 0;
