@@ -10,6 +10,7 @@
 
 ```sh
    默认使用UDP来传输屏幕图像，额外的TCP连接来传输EVENT，包括连接状态
+
    要使用TCP，通过在pro中添加 DEFINES += USE_TCP
 ```
 
