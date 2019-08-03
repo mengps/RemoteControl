@@ -8,25 +8,25 @@ DEFINES += USE_TCP#else use udp
 INCLUDEPATH += ../RemoteControl/src
 
 HEADERS += \
-    src/controller.h \
     src/remoteevent.h \
-    src/imageprovider.h
+    src/imageprovider.h \
 
 SOURCES += \
     src/main.cpp \
-    src/controller.cpp \
     src/remoteevent.cpp \
-    src/imageprovider.cpp
+    src/imageprovider.cpp \
 
 if (contains(DEFINES, USE_TCP)){
     message("Use Tcp")
     HEADERS += \
         src/tcp/controlled.h \
+        src/tcp/controller.h \
         src/tcp/protocol.h \
         src/tcp/socket.h
 
     SOURCES += \
         src/tcp/controlled.cpp \
+        src/tcp/controller.cpp \
         src/tcp/protocol.cpp \
         src/tcp/socket.cpp
 
@@ -34,12 +34,16 @@ if (contains(DEFINES, USE_TCP)){
 }else{
     message("Use Udp")
     HEADERS += \
+        src/udp/connection.h \
         src/udp/controlled.h \
+        src/udp/controller.h \
         src/udp/protocol.h \
         src/udp/socket.h
 
     SOURCES += \
+        src/udp/connection.cpp \
         src/udp/controlled.cpp \
+        src/udp/controller.cpp \
         src/udp/protocol.cpp \
         src/udp/socket.cpp
 

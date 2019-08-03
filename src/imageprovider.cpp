@@ -1,5 +1,4 @@
 #include "imageprovider.h"
-#include <QDebug>
 
 ImageProvider::ImageProvider()
     : QQuickImageProvider(QQuickImageProvider::Pixmap)

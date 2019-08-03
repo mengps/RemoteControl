@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
 #ifdef USE_TCP
     qRegisterMetaType<DataBlock>("DataBlock");
 #endif
-    qRegisterMetaType<quint16>("quint16");
+    qRegisterMetaType<QHostAddress>("QHostAddress");
     qRegisterMetaType<RemoteEvent>("RemoteEvent");
 
     Controlled *controlled = new Controlled;

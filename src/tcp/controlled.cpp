@@ -111,12 +111,12 @@ void Controlled::incomingConnection(qintptr socketDescriptor)
         connect(m_controlled, &Socket::connected, this, [](){});
         connect(m_controlled, &Socket::disconnected, this, [this]()
         {
-            killTimer(m_timerId);
-            m_timerId = 0;
             Socket *socket = m_controlled;
             m_controlled = nullptr;
             QMetaObject::invokeMethod(socket, "abort");
             socket->deleteLater();
+            killTimer(m_timerId);
+            m_timerId = 0;
         });
         connect(m_controlled, &Socket::hasEventData, this, [this](const RemoteEvent &event)
         {
