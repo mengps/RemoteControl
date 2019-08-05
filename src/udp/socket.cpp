@@ -31,7 +31,7 @@ void Socket::writeToSocket(const QByteArray &d)
     {
         qDebug() << "发送速率：" << frame << " / s";
         frame = 0;
-        time = QTime::currentTime();;
+        time = QTime::currentTime();
     }
 
     if (!m_destAddr.isNull())

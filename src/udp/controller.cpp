@@ -27,6 +27,13 @@ Controller::Controller(QObject *parent)
 
     m_connection = new Connection(this);
     connect(m_connection, &Connection::connected, this, &Controller::connected);
+    connect(m_connection, &Connection::disconnected, this, &Controller::disconnected);
+}
+
+void Controller::finish()
+{
+     m_connection->abort();
+     QMetaObject::invokeMethod(m_socket, "finish");
 }
 
 void Controller::mouseClicked(const QPointF &position)
@@ -42,8 +49,12 @@ void Controller::mouseDBClicked(const QPointF &position)
 void Controller::requestNewConnection(const QString &address)
 {
     m_connection->abort();
-    m_connection->connectToHost(address, 43801);
-    QMetaObject::invokeMethod(m_socket, "setDestAddr", Q_ARG(QHostAddress, QHostAddress(address)));
+    QHostAddress hostAddress(address);
+    if (!hostAddress.isNull())
+    {
+        m_connection->connectToHost(address, 43801);
+        QMetaObject::invokeMethod(m_socket, "setDestAddr", Q_ARG(QHostAddress, QHostAddress(address)));
+    }
 }
 
 void Controller::sendRemoteEvent(RemoteEvent::EventType type, const QPointF &position)

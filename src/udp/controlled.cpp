@@ -109,10 +109,7 @@ void Controlled::incomingConnection(qintptr socketDescriptor)
     {
         m_connection = new Connection(this);
         m_connection->setSocketDescriptor(socketDescriptor);
-        connect(m_connection, &Connection::connected, this, [this]()
-        {
-            emit hasRemoteConnection();
-        });
+        connect(m_connection, &Connection::connected, this, &Controlled::connected);
         connect(m_connection, &Connection::disconnected, this, [this]()
         {
             m_connection->deleteLater();
@@ -120,6 +117,7 @@ void Controlled::incomingConnection(qintptr socketDescriptor)
             QMetaObject::invokeMethod(m_screenSocket, "finish");
             killTimer(m_timerId);
             m_timerId = 0;
+            emit disconnected();
         });
         connect(m_connection, &Connection::hasEventData, this, [this](const RemoteEvent &event)
         {
