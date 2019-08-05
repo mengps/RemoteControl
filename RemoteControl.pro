@@ -10,11 +10,13 @@ INCLUDEPATH += ../RemoteControl/src
 HEADERS += \
     src/remoteevent.h \
     src/imageprovider.h \
+    src/api.h
 
 SOURCES += \
     src/main.cpp \
     src/remoteevent.cpp \
     src/imageprovider.cpp \
+    src/api.cpp
 
 if (contains(DEFINES, USE_TCP)){
     message("Use Tcp")

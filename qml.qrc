@@ -1,5 +1,12 @@
 <RCC>
     <qresource prefix="/">
         <file>qml/main.qml</file>
+        <file>qml/GlowRectangle.qml</file>
+        <file>qml/MoveMouseArea.qml</file>
+        <file>qml/MyButton.qml</file>
+        <file>qml/MyToolTip.qml</file>
+        <file>qml/ResizeMouseArea.qml</file>
+        <file>qml/ControlledPage.qml</file>
+        <file>qml/ControllerPage.qml</file>
     </qresource>
 </RCC>

@@ -3,10 +3,14 @@
 
 #include <QObject>
 
-class Api
+class Api : public QObject
 {
+    Q_OBJECT
+
 public:
     Api();
+
+    Q_INVOKABLE QString getLocalIpAddress();
 };
 
 #endif // API_H

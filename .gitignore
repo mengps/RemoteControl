@@ -1,5 +1,6 @@
 debug/
 release/
+android-build/
 *.user
 *.Debug
 *.Release
@@ -8,3 +9,5 @@ Makefile
 *.rc
 *.exe
 *.qmlc
+*.so-deployment-settings.json
+*.so
