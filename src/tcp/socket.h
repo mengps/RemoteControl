@@ -12,8 +12,8 @@ public:
     explicit Socket(QObject *parent = nullptr);
     ~Socket();
 
-    Q_INVOKABLE void abort() { QTcpSocket::abort(); }
-    Q_INVOKABLE void connectTo(const QString &host, quint16 port) { QTcpSocket::connectToHost(host, port); }
+    Q_INVOKABLE void abort();
+    Q_INVOKABLE void connectTo(const QHostAddress &host, quint16 port) { QTcpSocket::connectToHost(host, port); }
     Q_INVOKABLE void writeToSocket(const QByteArray &block) { write(block); }
     Q_INVOKABLE void writeToSocket(DataBlock block);
     Q_INVOKABLE void writeToSocket(const RemoteEvent &event);

@@ -14,12 +14,14 @@ public:
 
     ImageProvider* getImageProvider() { return m_provider; }
 
+    Q_INVOKABLE void finish();
     Q_INVOKABLE void mouseClicked(const QPointF &position);
     Q_INVOKABLE void mouseDBClicked(const QPointF &position);
     Q_INVOKABLE void requestNewConnection(const QString &address);
 
 signals:
     void connected();
+    void disconnected();
     void needUpdate();
 
 private:

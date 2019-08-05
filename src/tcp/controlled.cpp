@@ -108,7 +108,7 @@ void Controlled::incomingConnection(qintptr socketDescriptor)
         connect(thread, &QThread::finished, thread, &QThread::deleteLater);
         m_controlled = new Socket;
         m_controlled->setSocketDescriptor(socketDescriptor);
-        connect(m_controlled, &Socket::connected, this, [](){});
+        connect(m_controlled, &Socket::connected, this, &Controlled::connected);
         connect(m_controlled, &Socket::disconnected, this, [this]()
         {
             Socket *socket = m_controlled;
@@ -117,6 +117,7 @@ void Controlled::incomingConnection(qintptr socketDescriptor)
             socket->deleteLater();
             killTimer(m_timerId);
             m_timerId = 0;
+            emit disconnected();
         });
         connect(m_controlled, &Socket::hasEventData, this, [this](const RemoteEvent &event)
         {

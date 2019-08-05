@@ -3,7 +3,6 @@
 
 #include "protocol.h"
 #include <QObject>
-#include <QThread>
 #include <QTcpServer>
 
 class Socket;
@@ -17,7 +16,8 @@ public:
     ~Controlled();
 
 signals:
-    void hasRemoteConnection();
+    void connected();
+    void disconnected();
 
 public slots:
     void processEvent(const RemoteEvent &ev);

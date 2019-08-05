@@ -14,6 +14,8 @@ Controller::Controller(QObject *parent)
     m_socket = new Socket;
     QThread *thread = new QThread;
     connect(thread, &QThread::finished, thread, &QThread::deleteLater);
+    connect(m_socket, &Socket::connected, this, &Controller::connected);
+    connect(m_socket, &Socket::disconnected, this, &Controller::disconnected);
     connect(m_socket, &Socket::hasScreenData, this, [this](const QByteArray &screenData)
     {
         QPixmap pixmap;
@@ -23,6 +25,11 @@ Controller::Controller(QObject *parent)
     });
     m_socket->moveToThread(thread);
     thread->start();
+}
+
+void Controller::finish()
+{
+     QMetaObject::invokeMethod(m_socket, "abort");
 }
 
 void Controller::mouseClicked(const QPointF &position)
@@ -37,8 +44,12 @@ void Controller::mouseDBClicked(const QPointF &position)
 
 void Controller::requestNewConnection(const QString &address)
 {
-    QMetaObject::invokeMethod(m_socket, "abort");
-    QMetaObject::invokeMethod(m_socket, "connectTo", Q_ARG(QString, address), Q_ARG(quint16, 43800));
+    QHostAddress hostAddress(address);
+    if (!hostAddress.isNull())
+    {
+        QMetaObject::invokeMethod(m_socket, "abort");
+        QMetaObject::invokeMethod(m_socket, "connectTo", Q_ARG(QHostAddress, hostAddress), Q_ARG(quint16, 43800));
+    }
 }
 
 void Controller::sendRemoteEvent(RemoteEvent::EventType type, const QPointF &position)

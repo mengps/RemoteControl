@@ -16,6 +16,13 @@ Socket::~Socket()
 
 }
 
+void Socket::abort()
+{
+    QTcpSocket::abort();
+    m_recvData.clear();
+    m_recvHeader.clear();
+}
+
 void Socket::writeToSocket(DataBlock block)
 {
     QByteArray data;
