@@ -32,6 +32,12 @@ Controlled::~Controlled()
 
 }
 
+void Controlled::finish()
+{
+    if (m_controlled)
+        QMetaObject::invokeMethod(m_controlled, "abort");
+}
+
 void Controlled::processEvent(const RemoteEvent &ev)
 {
     QRectF screenRect = qApp->primaryScreen()->geometry();
@@ -107,13 +113,21 @@ void Controlled::incomingConnection(qintptr socketDescriptor)
         QThread *thread = new QThread;
         connect(thread, &QThread::finished, thread, &QThread::deleteLater);
         m_controlled = new Socket;
-        m_controlled->setSocketDescriptor(socketDescriptor);
-        connect(m_controlled, &Socket::connected, this, &Controlled::connected);
+        connect(m_controlled, &Socket::stateChanged, this, [this](QAbstractSocket::SocketState socketState)
+        {
+            switch (socketState)
+            {
+            case QAbstractSocket::ConnectedState:
+                emit connected();
+                break;
+            default:
+                break;
+            }
+        });
         connect(m_controlled, &Socket::disconnected, this, [this]()
         {
             Socket *socket = m_controlled;
             m_controlled = nullptr;
-            QMetaObject::invokeMethod(socket, "abort");
             socket->deleteLater();
             killTimer(m_timerId);
             m_timerId = 0;
@@ -123,6 +137,7 @@ void Controlled::incomingConnection(qintptr socketDescriptor)
         {
             processEvent(event);
         });
+        m_controlled->setSocketDescriptor(socketDescriptor);
         m_controlled->moveToThread(thread);
         thread->start();
 

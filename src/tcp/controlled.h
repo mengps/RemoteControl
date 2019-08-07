@@ -15,6 +15,8 @@ public:
     explicit Controlled(QObject *parent = nullptr);
     ~Controlled();
 
+    Q_INVOKABLE void finish();
+
 signals:
     void connected();
     void disconnected();
