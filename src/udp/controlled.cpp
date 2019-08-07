@@ -37,6 +37,12 @@ Controlled::~Controlled()
 
 }
 
+void Controlled::finish()
+{
+    if (m_connection)
+        m_connection->disconnectFromHost();
+}
+
 void Controlled::processEvent(const RemoteEvent &ev)
 {
     QRectF screenRect = qApp->primaryScreen()->geometry();
@@ -108,8 +114,17 @@ void Controlled::incomingConnection(qintptr socketDescriptor)
     if (!m_connection)
     {
         m_connection = new Connection(this);
-        m_connection->setSocketDescriptor(socketDescriptor);
-        connect(m_connection, &Connection::connected, this, &Controlled::connected);
+        connect(m_connection, &Connection::stateChanged, this, [this](QAbstractSocket::SocketState socketState)
+        {
+            switch (socketState)
+            {
+            case QAbstractSocket::ConnectedState:
+                emit connected();
+                break;
+            default:
+                break;
+            }
+        });
         connect(m_connection, &Connection::disconnected, this, [this]()
         {
             m_connection->deleteLater();
@@ -123,6 +138,7 @@ void Controlled::incomingConnection(qintptr socketDescriptor)
         {
             processEvent(event);
         });
+        m_connection->setSocketDescriptor(socketDescriptor);
         QMetaObject::invokeMethod(m_screenSocket, "setDestAddr",
                                   Q_ARG(QHostAddress, QHostAddress(m_connection->peerAddress())));
 
