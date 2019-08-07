@@ -4,7 +4,8 @@ import QtQuick.Controls 2.12
 
 Window
 {
-    id: root
+    id: mainWindow
+
     visible: true
     width: 480
     height: 320
@@ -23,29 +24,37 @@ Window
     Connections
     {
         target: controlled
-        onConnected: root.connected = true;
-        onDisconnected: root.connected = false;
+        onConnected:
+        {
+            mainWindow.connected = true;
+            stackView.push("ControlledPage.qml");
+        }
+        onDisconnected:
+        {
+            mainWindow.connected = false;
+            stackView.pop();
+        }
     }
 
     Connections
     {
         target: controller
-        onConnected:
+        /*onConnected:
         {
-            root.connected = true;
+            mainWindow.connected = true;
             stackView.push("ControllerPage.qml");
         }
         onDisconnected:
         {
-            root.connected = false;
+            mainWindow.connected = false;
             stackView.pop();
-        }
+        }*/
     }
 
     ResizeMouseArea
     {
         anchors.fill: parent
-        target: root
+        target: mainWindow
     }
 
     GlowRectangle
@@ -79,7 +88,7 @@ Window
             anchors.rightMargin: 6
             anchors.top: maxButton.top
             text: " - "
-            onClicked: root.showMinimized();
+            onClicked: mainWindow.showMinimized();
         }
 
         MyButton
@@ -91,7 +100,7 @@ Window
             anchors.rightMargin: 6
             anchors.top: closeButton.top
             text: " + "
-            onClicked: root.showMaximized();
+            onClicked: mainWindow.showMaximized();
         }
 
         MyButton
@@ -105,7 +114,7 @@ Window
             onClicked:
             {
                 if (stackView.depth == 1)
-                    root.close();
+                    mainWindow.close();
                 else controller.finish();
             }
         }
@@ -138,7 +147,7 @@ Window
                     Text
                     {
                         id: ipAddressText
-                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.centerIn: parent
                         font.pointSize: 13
                         color: "red"
                         text: qsTr("本机IP地址：" + localIpAddress)
@@ -150,32 +159,39 @@ Window
                     width: 300
                     height: 30
 
-                    Text
+                    Item
                     {
-                        id: remoteIpAddressText
-                        font.pointSize: 13
-                        anchors.verticalCenter: parent.verticalCenter
-                        text: qsTr("远程IP地址：")
-                    }
+                        width: remoteIpAddressText.width + remoteIpAddressEdit.width
+                        height: 30
+                        anchors.horizontalCenter: parent.horizontalCenter
 
-                    TextField
-                    {
-                        id: remoteIpAddressEdit
-                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.left: remoteIpAddressText.right
-                        anchors.rightMargin: 10
-                        width: 200
-                        height: parent.height
-                        selectByMouse: true
-                        placeholderText: qsTr("输入IPv4 / IPv6 地址")
-                        background: Rectangle
+                        Text
                         {
-                            radius: 6
-                            border.color: "#09A3DC"
+                            id: remoteIpAddressText
+                            font.pointSize: 13
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: qsTr("远程IP地址：")
                         }
-                        validator: RegExpValidator
+
+                        TextField
                         {
-                            regExp: /(2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2}(\.((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})){3}/
+                            id: remoteIpAddressEdit
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: remoteIpAddressText.right
+                            anchors.rightMargin: 10
+                            width: 150
+                            height: parent.height
+                            selectByMouse: true
+                            placeholderText: qsTr("输入IPv4 / IPv6 地址")
+                            background: Rectangle
+                            {
+                                radius: 6
+                                border.color: "#09A3DC"
+                            }
+                            validator: RegExpValidator
+                            {
+                                regExp: /(2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2}(\.((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})){3}/
+                            }
                         }
                     }
                 }
@@ -190,7 +206,7 @@ Window
                         id: connectButton
                         anchors.horizontalCenter: parent.horizontalCenter
                         heightMargin: 8
-                        text: " <-连接-> "
+                        text: qsTr(" <-连接-> ")
                         onClicked: controller.requestNewConnection(remoteIpAddressEdit.text)
                     }
                 }
