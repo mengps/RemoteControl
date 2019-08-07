@@ -50,7 +50,7 @@ void Controller::requestNewConnection(const QString &address)
 {
     m_connection->abort();
     QHostAddress hostAddress(address);
-    if (!hostAddress.isNull())
+    if (!hostAddress.isNull() && !hostAddress.isLoopback())
     {
         m_connection->connectToHost(address, 43801);
         QMetaObject::invokeMethod(m_socket, "setDestAddr", Q_ARG(QHostAddress, QHostAddress(address)));

@@ -45,7 +45,7 @@ void Controller::mouseDBClicked(const QPointF &position)
 void Controller::requestNewConnection(const QString &address)
 {
     QHostAddress hostAddress(address);
-    if (!hostAddress.isNull())
+    if (!hostAddress.isNull() && !hostAddress.isLoopback())
     {
         QMetaObject::invokeMethod(m_socket, "abort");
         QMetaObject::invokeMethod(m_socket, "connectTo", Q_ARG(QHostAddress, hostAddress), Q_ARG(quint16, 43800));

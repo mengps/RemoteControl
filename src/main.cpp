@@ -17,6 +17,7 @@ int main(int argc, char *argv[])
 #ifdef USE_TCP
     qRegisterMetaType<DataBlock>("DataBlock");
 #endif
+    qRegisterMetaType<QAbstractSocket::SocketState>("SocketState");
     qRegisterMetaType<QHostAddress>("QHostAddress");
     qRegisterMetaType<RemoteEvent>("RemoteEvent");
 
