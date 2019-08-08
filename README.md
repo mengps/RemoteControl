@@ -20,7 +20,7 @@
    通过在pro中添加 DEFINES += USE_GDI 或者 DEFINES += USE_D3D
 ```
 ------
-# 关于Windows和Android
+### 关于Windows和Android
 
 要知道的是，因为不能完全跨平台，某些功能难以实现(水平不够)
 
