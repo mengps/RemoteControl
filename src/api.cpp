@@ -6,11 +6,31 @@ Api::Api()
 
 }
 
+bool Api::isLocalAddress(const QHostAddress &address)
+{
+#ifndef Q_OS_ANDROID    //安卓无效
+    auto interfaces = QNetworkInterface::allInterfaces();
+    QList<QNetworkAddressEntry> entry;
+    for (auto interface : interfaces)
+    {
+        if (interface.flags() & (QNetworkInterface::IsUp | QNetworkInterface::IsRunning))
+        {
+            entry = interface.addressEntries();
+            QHostAddress ip = entry.at(1).ip();
+            if (ip.toIPv4Address() == address.toIPv4Address()) //应对IPv6->IPv4
+                return true;
+            entry.clear();
+        }
+    }
+#endif
+    return false;
+}
+
 QString Api::getLocalIpAddress()
 {
     QString localIp = "0.0.0.0";
+#ifndef Q_OS_ANDROID
     auto interfaces = QNetworkInterface::allInterfaces();
-
     QList<QNetworkAddressEntry> entry;
     for (auto interface : interfaces)
     {        
@@ -33,6 +53,6 @@ QString Api::getLocalIpAddress()
             entry.clear();
         }
     }
-
+#endif
     return localIp;
 }

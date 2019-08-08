@@ -1,3 +1,4 @@
+#include "api.h"
 #include "controller.h"
 #include "connection.h"
 #include "imageprovider.h"
@@ -50,7 +51,7 @@ void Controller::requestNewConnection(const QString &address)
 {
     m_connection->abort();
     QHostAddress hostAddress(address);
-    if (!hostAddress.isNull() && !hostAddress.isLoopback())
+    if (!hostAddress.isNull() && !Api::isLocalAddress(hostAddress)) //有效且不为本机地址
     {
         m_connection->connectToHost(address, 43801);
         QMetaObject::invokeMethod(m_socket, "setDestAddr", Q_ARG(QHostAddress, QHostAddress(address)));

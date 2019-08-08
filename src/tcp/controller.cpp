@@ -1,3 +1,4 @@
+#include "api.h"
 #include "controller.h"
 #include "imageprovider.h"
 #include "socket.h"
@@ -45,7 +46,7 @@ void Controller::mouseDBClicked(const QPointF &position)
 void Controller::requestNewConnection(const QString &address)
 {
     QHostAddress hostAddress(address);
-    if (!hostAddress.isNull() && !hostAddress.isLoopback())
+    if (!hostAddress.isNull() && !Api::isLocalAddress(hostAddress)) //有效且不为本机地址
     {
         QMetaObject::invokeMethod(m_socket, "abort");
         QMetaObject::invokeMethod(m_socket, "connectTo", Q_ARG(QHostAddress, hostAddress), Q_ARG(quint16, 43800));

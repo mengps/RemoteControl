@@ -3,13 +3,14 @@
 
 #include <QObject>
 
+class QHostAddress;
 class Api : public QObject
 {
     Q_OBJECT
 
 public:
     Api();
-
+    static bool isLocalAddress(const QHostAddress &address);
     Q_INVOKABLE QString getLocalIpAddress();
 };
 
