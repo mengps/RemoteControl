@@ -20,6 +20,13 @@
    通过在pro中添加 DEFINES += USE_GDI 或者 DEFINES += USE_D3D
 ```
 ------
+# 关于Windows和Android
+
+要知道的是，因为不能完全跨平台，某些功能难以实现(水平不够)
+
+并且界面也需要做一些调整，很麻烦
+
+------
 使用Qml开发
 
 开发环境windows 7，Qt 5.12.0
