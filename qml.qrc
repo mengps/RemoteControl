@@ -8,5 +8,6 @@
         <file>qml/ResizeMouseArea.qml</file>
         <file>qml/ControlledPage.qml</file>
         <file>qml/ControllerPage.qml</file>
+        <file>qml/MySystemTray.qml</file>
     </qresource>
 </RCC>

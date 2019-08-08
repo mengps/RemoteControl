@@ -9,7 +9,7 @@ Window
     visible: true
     width: 480
     height: 320
-    title: qsTr("RemoteControl")
+    title: qsTr("远程控制")
     color: "#D4E6FF"
     Component.onCompleted:
     {
@@ -39,7 +39,7 @@ Window
     Connections
     {
         target: controller
-        /*onConnected:
+        onConnected:
         {
             mainWindow.connected = true;
             stackView.push("ControllerPage.qml");
@@ -48,12 +48,13 @@ Window
         {
             mainWindow.connected = false;
             stackView.pop();
-        }*/
+        }
     }
 
     ResizeMouseArea
     {
         anchors.fill: parent
+        enabled: !mobile
         target: mainWindow
     }
 
@@ -69,7 +70,7 @@ Window
         glowColor: color
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
-        anchors.topMargin: -radius
+        anchors.topMargin: mobile && connected ? 0 : -radius
 
         Text
         {
@@ -82,6 +83,8 @@ Window
         MyButton
         {
             id: minButton
+            visible: enabled
+            enabled: !mobile
             fontSize: 12
             widthMargin: 8
             anchors.right: maxButton.left
@@ -94,6 +97,8 @@ Window
         MyButton
         {
             id: maxButton
+            visible: enabled
+            enabled: !mobile
             fontSize: 12
             widthMargin: 8
             anchors.right: closeButton.left
