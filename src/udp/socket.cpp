@@ -27,15 +27,13 @@ void Socket::writeToSocket(const QByteArray &d)
 {
     static QTime time = QTime::currentTime();
     static int frame = 0;
-    if (time.msecsTo(QTime::currentTime()) > 1000)
-    {
+    if (time.msecsTo(QTime::currentTime()) > 1000) {
         qDebug() << "发送速率：" << frame << " / s";
         frame = 0;
         time = QTime::currentTime();
     }
 
-    if (!m_destAddr.isNull())
-    {
+    if (!m_destAddr.isNull()) {
         int currentIndex = 0;
         int blockOffset = 0;
         int blockSize = d.size();
@@ -47,8 +45,7 @@ void Socket::writeToSocket(const QByteArray &d)
         QDataStream out(&data, QIODevice::WriteOnly);
         out.setVersion(QDataStream::Qt_5_12);
 
-        while (currentIndex < blockNum)
-        {
+        while (currentIndex < blockNum) {
             ScreenDataBlock block;
             block.blockIndex = currentIndex + 1;
             block.blockNum = blockNum;
@@ -74,8 +71,7 @@ void Socket::processRecvData()
     static int blockSize = 0;
     static QByteArray recvData;
 
-    while (hasPendingDatagrams())
-    {
+    while (hasPendingDatagrams()) {
         QNetworkDatagram datagram = receiveDatagram();
         QByteArray data  = datagram.data();
 
@@ -86,23 +82,19 @@ void Socket::processRecvData()
         if (currentIndex == 1)
             recvData.resize(block.blockSize);
 
-        if (currentIndex == block.blockIndex)
-        {
+        if (currentIndex == block.blockIndex) {
             currentIndex++;
             blockSize += block.data.size();
             recvData.insert((block.blockIndex - 1) * maxBlockSize, block.data);
 
-            if (block.blockIndex == block.blockNum && blockSize == block.blockSize)
-            {
+            if (block.blockIndex == block.blockNum && blockSize == block.blockSize) {
                 emit hasScreenData(recvData);
 
                 currentIndex = 1;
                 blockSize = 0;
                 recvData.clear();
             }
-        }
-        else
-        {
+        } else {
             currentIndex = 1;
             blockSize = 0;
             recvData.clear();

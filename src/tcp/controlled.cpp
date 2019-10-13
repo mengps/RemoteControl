@@ -13,12 +13,14 @@
 #include <windows.h>
 #endif
 
-#if defined (USE_GDI)
-#include <QtWin>
-#elif defined (USE_D3D)
-#include <QtWin>
-#include <d3d9.h>
-#include <d3dx9tex.h>
+#ifdef Q_OS_WIN
+  #if defined (USE_GDI)
+    #include <QtWin>
+  #elif defined (USE_D3D)
+  #include <QtWin>
+    #include <d3d9.h>
+    #include <d3dx9tex.h>
+  #endif
 #endif
 
 Controlled::Controlled(QObject *parent)
@@ -44,8 +46,7 @@ void Controlled::processEvent(const RemoteEvent &ev)
     QPointF localPos(ev.position().x() * screenRect.width(),
                      ev.position().y() * screenRect.height());
 
-    auto clickFunc = [localPos](int clickCount)
-    {
+    auto clickFunc = [localPos](int clickCount) {
 #ifdef Q_OS_WIN
         POINT point;
         point.x = int(localPos.x());
@@ -64,8 +65,7 @@ void Controlled::processEvent(const RemoteEvent &ev)
         SetCursorPos(point.x, point.y);
 
         //发送点击事件，按下+弹起为点击一次
-        for (int i = 0; i < clickCount; i++)
-        {
+        for (int i = 0; i < clickCount; i++) {
             mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
             mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
         }
@@ -90,15 +90,16 @@ void Controlled::processEvent(const RemoteEvent &ev)
 void Controlled::timerEvent(QTimerEvent *event)
 {
     Q_UNUSED(event);
-    if (m_controlled)
-    {
+    if (m_controlled) {
         QBuffer buffer;
         buffer.open(QIODevice::WriteOnly);
 #if defined (USE_GDI) || defined (USE_D3D)
-        grabScreen().save(&buffer, "jpg", -1);       
+        grabScreen().save(&buffer, "jpg", -1);
 #else
+        QTime time = QTime::currentTime();
         QPixmap pixmap = QGuiApplication::primaryScreen()->grabWindow(0);
         pixmap.save(&buffer, "jpg", -1);
+        qDebug() << QTime::currentTime().msecsTo(time);
 #endif
         BlockHeader header = { SCREEN_TYPE, qint32(buffer.size()) };
         DataBlock data = { header, buffer.data() };
@@ -149,14 +150,13 @@ void Controlled::incomingConnection(qintptr socketDescriptor)
 QPixmap Controlled::grabScreen()
 {
     QPixmap screen;
-#ifdef USE_D3D
+#if defined (USE_D3D) && defined(Q_OS_WIN)
     static bool d3dCreated = false;
     static LPDIRECT3D9 lpD3D = nullptr;
     static LPDIRECT3DDEVICE9 lpDevice = nullptr;
     static D3DDISPLAYMODE ddm;
 
-    if (!d3dCreated)
-    {
+    if (!d3dCreated) {
         lpD3D = Direct3DCreate9(D3D_SDK_VERSION);
         lpD3D->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &ddm);
         D3DPRESENT_PARAMETERS d3dpp;
@@ -178,19 +178,19 @@ QPixmap Controlled::grabScreen()
         qDebug() << ddm.Width << ddm.Height << lpDevice;
     }
 
-    if (lpDevice)
-    {
+    if (lpDevice) {
         LPDIRECT3DSURFACE9 surface;
         lpDevice->CreateOffscreenPlainSurface(ddm.Width, ddm.Height, D3DFMT_A8R8G8B8, D3DPOOL_SCRATCH, &surface, nullptr);
         lpDevice->GetFrontBufferData(0, surface);
         LPD3DXBUFFER bufferedImage = nullptr;
         D3DXSaveSurfaceToFileInMemory(&bufferedImage, D3DXIFF_JPG, surface, nullptr, nullptr);
-        screen.loadFromData((uchar *)bufferedImage->GetBufferPointer(), bufferedImage->GetBufferSize(), "JPG");
+        screen.loadFromData(static_cast<uchar *>(bufferedImage->GetBufferPointer()), bufferedImage->GetBufferSize(), "JPG");
+        bufferedImage->Release();
         surface->Release();
     }
 #endif
 
-#ifdef USE_GDI
+#if defined (USE_GDI) && defined(Q_OS_WIN)
     int width = GetSystemMetrics(SM_CXSCREEN);
     int height = GetSystemMetrics(SM_CYSCREEN);
 
@@ -212,6 +212,6 @@ QPixmap Controlled::grabScreen()
     screen = QtWin::fromHBITMAP(bitmap);
     DeleteObject(bitmap);
     ReleaseDC(nullptr, display_dc);
-#endif  
+#endif
     return screen;
 }

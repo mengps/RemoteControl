@@ -1,6 +1,7 @@
 #include "api.h"
 #include "controlled.h"
 #include "controller.h"
+#include "framelesswindow.h"
 #include "imageprovider.h"
 #include "protocol.h"
 
@@ -20,6 +21,8 @@ int main(int argc, char *argv[])
     qRegisterMetaType<QAbstractSocket::SocketState>("SocketState");
     qRegisterMetaType<QHostAddress>("QHostAddress");
     qRegisterMetaType<RemoteEvent>("RemoteEvent");
+
+    qmlRegisterType<FramelessWindow>("an.window", 1, 0, "FramelessWindow");
 
     Api *api = new Api;
     Controlled *controlled = new Controlled;

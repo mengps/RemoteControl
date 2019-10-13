@@ -1,18 +1,21 @@
 import QtQuick 2.12
 import QtQuick.Window 2.12
 import QtQuick.Controls 2.12
+import an.window 1.0
 
-Window
-{
+FramelessWindow {
     id: mainWindow
 
     visible: true
-    width: 480
-    height: 320
+    width: mobile ? Screen.desktopAvailableWidth : 480
+    height: mobile ? Screen.desktopAvailableHeight : 320
+    minimumWidth: 480
+    minimumHeight: 320
     title: qsTr("远程控制")
     color: "#D4E6FF"
-    Component.onCompleted:
-    {
+    movable: !mobile
+    resizable: !mobile
+    Component.onCompleted: {
         stackView.push(mainPage);
         flags |= Qt.FramelessWindowHint;
     }
@@ -21,45 +24,31 @@ Window
     property bool connected: false;
     property string localIpAddress: Api.getLocalIpAddress();
 
-    Connections
-    {
+    Connections {
         target: controlled
-        onConnected:
-        {
+        onConnected: {
             mainWindow.connected = true;
             stackView.push("ControlledPage.qml");
         }
-        onDisconnected:
-        {
+        onDisconnected: {
             mainWindow.connected = false;
             stackView.pop();
         }
     }
 
-    Connections
-    {
+    Connections {
         target: controller
-        onConnected:
-        {
+        onConnected: {
             mainWindow.connected = true;
             stackView.push("ControllerPage.qml");
         }
-        onDisconnected:
-        {
+        onDisconnected: {
             mainWindow.connected = false;
             stackView.pop();
         }
     }
 
-    ResizeMouseArea
-    {
-        anchors.fill: parent
-        enabled: !mobile
-        target: mainWindow
-    }
-
-    GlowRectangle
-    {
+    GlowRectangle {
         id: windowTitle
         clip: true
         radius: 5
@@ -72,16 +61,14 @@ Window
         anchors.top: parent.top
         anchors.topMargin: mobile && connected ? 0 : -radius
 
-        Text
-        {
+        Text {
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 10
             text: qsTr("远程控制")
         }
 
-        MyButton
-        {
+        MyButton {
             id: minButton
             visible: enabled
             enabled: !mobile
@@ -94,8 +81,7 @@ Window
             onClicked: mainWindow.showMinimized();
         }
 
-        MyButton
-        {
+        MyButton {
             id: maxButton
             visible: enabled
             enabled: !mobile
@@ -108,8 +94,7 @@ Window
             onClicked: mainWindow.showMaximized();
         }
 
-        MyButton
-        {
+        MyButton {
             id: closeButton
             fontSize: 12
             widthMargin: 8
@@ -125,32 +110,27 @@ Window
         }
     }
 
-    StackView
-    {
+    StackView {
         id: stackView
         width: parent.width
         anchors.top: windowTitle.bottom
         anchors.bottom: parent.bottom
     }
 
-    Component
-    {
+    Component {
         id: mainPage
 
-        Item
-        {
-            Column
-            {
+        Item {
+
+            Column {
                 anchors.centerIn: parent
                 spacing: 32
 
-                Item
-                {
+                Item {
                     width: 300
                     height: 30
 
-                    Text
-                    {
+                    Text {
                         id: ipAddressText
                         anchors.centerIn: parent
                         font.pointSize: 13
@@ -159,27 +139,23 @@ Window
                     }
                 }
 
-                Item
-                {
+                Item {
                     width: 300
                     height: 30
 
-                    Item
-                    {
+                    Item {
                         width: remoteIpAddressText.width + remoteIpAddressEdit.width
                         height: 30
                         anchors.horizontalCenter: parent.horizontalCenter
 
-                        Text
-                        {
+                        Text {
                             id: remoteIpAddressText
                             font.pointSize: 13
                             anchors.verticalCenter: parent.verticalCenter
                             text: qsTr("远程IP地址：")
                         }
 
-                        TextField
-                        {
+                        TextField {
                             id: remoteIpAddressEdit
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: remoteIpAddressText.right
@@ -188,26 +164,23 @@ Window
                             height: parent.height
                             selectByMouse: true
                             placeholderText: qsTr("输入IPv4 / IPv6 地址")
-                            background: Rectangle
-                            {
+                            background: Rectangle {
                                 radius: 6
                                 border.color: "#09A3DC"
                             }
-                            validator: RegExpValidator
-                            {
+                            validator: RegExpValidator {
+                                //IP正则
                                 regExp: /(2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2}(\.((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})){3}/
                             }
                         }
                     }
                 }
 
-                Item
-                {
+                Item {
                     width: 300
                     height: 30
 
-                    MyButton
-                    {
+                    MyButton {
                         id: connectButton
                         anchors.horizontalCenter: parent.horizontalCenter
                         heightMargin: 8

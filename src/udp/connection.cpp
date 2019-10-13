@@ -5,8 +5,7 @@
 Connection::Connection(QObject *parent)
     : QTcpSocket (parent)
 {
-    connect(this, &QTcpSocket::readyRead, this, [this]()
-    {
+    connect(this, &QTcpSocket::readyRead, this, [this]() {
         m_recvData += readAll();
         processRecvData();
     });
@@ -29,8 +28,7 @@ void Connection::processRecvData()
     in.setVersion(QDataStream::Qt_5_12);
     in >> event;
 
-    if (!event.isEmpty())
-    {
+    if (!event.isEmpty()) {
         //position会在前面加4字节
         m_recvData.remove(0, sizeof (event.type()) + sizeof (event.position()) + 4);
         emit hasEventData(event);

@@ -17,8 +17,7 @@ Controller::Controller(QObject *parent)
     connect(thread, &QThread::finished, thread, &QThread::deleteLater);
     connect(m_socket, &Socket::connected, this, &Controller::connected);
     connect(m_socket, &Socket::disconnected, this, &Controller::disconnected);
-    connect(m_socket, &Socket::hasScreenData, this, [this](const QByteArray &screenData)
-    {
+    connect(m_socket, &Socket::hasScreenData, this, [this](const QByteArray &screenData) {
         QPixmap pixmap;
         pixmap.loadFromData(screenData);
         m_provider->setPixmap(pixmap);
@@ -46,8 +45,8 @@ void Controller::mouseDBClicked(const QPointF &position)
 void Controller::requestNewConnection(const QString &address)
 {
     QHostAddress hostAddress(address);
-    if (!hostAddress.isNull() && !Api::isLocalAddress(hostAddress)) //有效且不为本机地址
-    {
+    //有效且不为本机地址
+    if (!hostAddress.isNull() && !Api::isLocalAddress(hostAddress)) {
         QMetaObject::invokeMethod(m_socket, "abort");
         QMetaObject::invokeMethod(m_socket, "connectTo", Q_ARG(QHostAddress, hostAddress), Q_ARG(quint16, 43800));
     }

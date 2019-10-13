@@ -1,11 +1,9 @@
 import QtQuick 2.12
 
-Item
-{
+Item {
     id: root
 
-    Image
-    {
+    Image {
         id: image
         anchors.fill: parent
         sourceSize: Qt.size(parent.width, parent.height)
@@ -13,8 +11,7 @@ Item
 
         property int frame: 0;
 
-        Text
-        {
+        Text {
             id: fpsText
             anchors.left: parent.left
             anchors.leftMargin: 50
@@ -24,40 +21,33 @@ Item
             color: "red"
         }
 
-        Timer
-        {
+        Timer {
             interval: 1000
             running: true
             repeat:true
-            onTriggered:
-            {
+            onTriggered: {
                 fpsText.text = "FPS :" + image.frame;
                 image.frame = 0;
             }
         }
     }
 
-    Connections
-    {
+    Connections {
         target: controller
-        onNeedUpdate:
-        {
+        onNeedUpdate: {
             image.frame++;
             image.source = "image://screen/" + Date.now();
         }
     }
 
-    MouseArea
-    {
+    MouseArea {
         id: controllerArea
         anchors.fill: parent
-        onClicked:
-        {
+        onClicked: {
             let ratio = Qt.point(mouse.x / root.width, mouse.y / root.height);
             controller.mouseClicked(ratio);
         }
-        onDoubleClicked:
-        {
+        onDoubleClicked: {
             let ratio = Qt.point(mouse.x / root.width, mouse.y / root.height);
             controller.mouseDBClicked(ratio);
         }

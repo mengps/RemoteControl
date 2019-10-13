@@ -16,8 +16,7 @@ Controller::Controller(QObject *parent)
     m_socket->bind(QHostAddress::Any, 43800);
     QThread *thread = new QThread;
     connect(thread, &QThread::finished, thread, &QThread::deleteLater);
-    connect(m_socket, &Socket::hasScreenData, this, [this](const QByteArray &screenData)
-    {
+    connect(m_socket, &Socket::hasScreenData, this, [this](const QByteArray &screenData) {
         QPixmap pixmap;
         pixmap.loadFromData(screenData);
         m_provider->setPixmap(pixmap);
@@ -51,8 +50,8 @@ void Controller::requestNewConnection(const QString &address)
 {
     m_connection->abort();
     QHostAddress hostAddress(address);
-    if (!hostAddress.isNull() && !Api::isLocalAddress(hostAddress)) //有效且不为本机地址
-    {
+    //有效且不为本机地址
+    if (!hostAddress.isNull() && !Api::isLocalAddress(hostAddress)){
         m_connection->connectToHost(address, 43801);
         QMetaObject::invokeMethod(m_socket, "setDestAddr", Q_ARG(QHostAddress, QHostAddress(address)));
     }

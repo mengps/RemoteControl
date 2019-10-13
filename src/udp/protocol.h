@@ -16,8 +16,7 @@ struct ScreenDataBlock
         : blockSize(0), blockIndex(0)
         , blockNum(0), data(QByteArray()) { }
 
-    int size() const
-    {
+    int size() const {
         return int(sizeof (blockIndex)) +
                int(sizeof (blockSize)) +
                int(sizeof (blockNum)) +

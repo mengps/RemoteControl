@@ -17,18 +17,15 @@ struct BlockHeader
     BlockHeader() : type(0), dataSize(0) { }
     BlockHeader(qint8 t, qint32 s) : type(t), dataSize(s) { }
 
-    bool isEmpty() const
-    {
+    bool isEmpty() const {
         return type == 0 && dataSize == 0;
     }
 
-    void clear()
-    {
+    void clear() {
         type = dataSize = 0;
     }
 
-    int size() const
-    {
+    int size() const {
         return sizeof(type) + sizeof(dataSize) + 4;     //data为QByteArray会加4字节
     }
 };

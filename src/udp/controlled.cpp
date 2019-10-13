@@ -13,12 +13,14 @@
 #include <windows.h>
 #endif
 
-#if defined (USE_GDI)
-#include <QtWin>
-#elif defined (USE_D3D)
-#include <QtWin>
-#include <d3d9.h>
-#include <d3dx9tex.h>
+#ifdef Q_OS_WIN
+  #if defined (USE_GDI)
+    #include <QtWin>
+  #elif defined (USE_D3D)
+  #include <QtWin>
+    #include <d3d9.h>
+    #include <d3dx9tex.h>
+  #endif
 #endif
 
 Controlled::Controlled(QObject *parent)
@@ -49,8 +51,7 @@ void Controlled::processEvent(const RemoteEvent &ev)
     QPointF localPos(ev.position().x() * screenRect.width(),
                      ev.position().y() * screenRect.height());
 
-    auto clickFunc = [localPos](int clickCount)
-    {
+    auto clickFunc = [localPos](int clickCount) {
 #ifdef Q_OS_WIN
         POINT point;
         point.x = int(localPos.x());
@@ -95,8 +96,7 @@ void Controlled::processEvent(const RemoteEvent &ev)
 void Controlled::timerEvent(QTimerEvent *event)
 {
     Q_UNUSED(event);
-    if (m_screenSocket)
-    {
+    if (m_screenSocket) {
         QBuffer buffer;
         buffer.open(QIODevice::WriteOnly);
 #if defined (USE_GDI) || defined (USE_D3D)
@@ -111,11 +111,9 @@ void Controlled::timerEvent(QTimerEvent *event)
 
 void Controlled::incomingConnection(qintptr socketDescriptor)
 {
-    if (!m_connection)
-    {
+    if (!m_connection) {
         m_connection = new Connection(this);
-        connect(m_connection, &Connection::stateChanged, this, [this](QAbstractSocket::SocketState socketState)
-        {
+        connect(m_connection, &Connection::stateChanged, this, [this](QAbstractSocket::SocketState socketState) {
             switch (socketState)
             {
             case QAbstractSocket::ConnectedState:
@@ -125,8 +123,7 @@ void Controlled::incomingConnection(qintptr socketDescriptor)
                 break;
             }
         });
-        connect(m_connection, &Connection::disconnected, this, [this]()
-        {
+        connect(m_connection, &Connection::disconnected, this, [this]() {
             m_connection->deleteLater();
             m_connection = nullptr;
             QMetaObject::invokeMethod(m_screenSocket, "finish");
@@ -134,8 +131,7 @@ void Controlled::incomingConnection(qintptr socketDescriptor)
             m_timerId = 0;
             emit disconnected();
         });
-        connect(m_connection, &Connection::hasEventData, this, [this](const RemoteEvent &event)
-        {
+        connect(m_connection, &Connection::hasEventData, this, [this](const RemoteEvent &event) {
             processEvent(event);
         });
         m_connection->setSocketDescriptor(socketDescriptor);
@@ -150,14 +146,13 @@ void Controlled::incomingConnection(qintptr socketDescriptor)
 QPixmap Controlled::grabScreen()
 {
     QPixmap screen;
-#ifdef USE_D3D
+#if defined (USE_D3D) && defined(Q_OS_WIN)
     static bool d3dCreated = false;
     static LPDIRECT3D9 lpD3D = nullptr;
     static LPDIRECT3DDEVICE9 lpDevice = nullptr;
     static D3DDISPLAYMODE ddm;
 
-    if (!d3dCreated)
-    {
+    if (!d3dCreated) {
         lpD3D = Direct3DCreate9(D3D_SDK_VERSION);
         lpD3D->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &ddm);
         D3DPRESENT_PARAMETERS d3dpp;
@@ -179,8 +174,7 @@ QPixmap Controlled::grabScreen()
         qDebug() << ddm.Width << ddm.Height << lpDevice;
     }
 
-    if (lpDevice)
-    {
+    if (lpDevice) {
         LPDIRECT3DSURFACE9 surface;
         lpDevice->CreateOffscreenPlainSurface(ddm.Width, ddm.Height, D3DFMT_A8R8G8B8, D3DPOOL_SCRATCH, &surface, nullptr);
         lpDevice->GetFrontBufferData(0, surface);
@@ -191,7 +185,7 @@ QPixmap Controlled::grabScreen()
     }
 #endif
 
-#ifdef USE_GDI
+#if defined (USE_GDI) && defined(Q_OS_WIN)
     int width = GetSystemMetrics(SM_CXSCREEN);
     int height = GetSystemMetrics(SM_CYSCREEN);
 

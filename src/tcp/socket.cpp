@@ -4,8 +4,7 @@
 Socket::Socket(QObject *parent)
     : QTcpSocket (parent)
 {
-    connect(this, &QTcpSocket::readyRead, this, [this]()
-    {
+    connect(this, &QTcpSocket::readyRead, this, [this]() {
         m_recvData += readAll();
         processRecvBlock();
     });
@@ -48,8 +47,7 @@ void Socket::writeToSocket(const RemoteEvent &event)
 
 void Socket::processRecvBlock()
 {
-    if (m_recvHeader.isEmpty() && m_recvData.size() > 0)
-    {
+    if (m_recvHeader.isEmpty() && m_recvData.size() > 0) {
         BlockHeader header;
         QDataStream in(&m_recvData, QIODevice::ReadOnly);
         in.setVersion(QDataStream::Qt_5_12);
@@ -71,10 +69,9 @@ void Socket::processRecvBlock()
     m_recvData = m_recvData.mid(m_recvHeader.dataSize);
     m_recvHeader.clear();
 
-    if (block.header.type == SCREEN_TYPE)
+    if (block.header.type == SCREEN_TYPE) {
         emit hasScreenData(block.data);
-    else if (block.header.type == EVENT_TYPE)
-    {
+    } else if (block.header.type == EVENT_TYPE) {
         qint32 type;
         QPointF position;
         QDataStream in(block.data);
