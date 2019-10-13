@@ -32,9 +32,11 @@
    使用 `MIT LICENSE`
 
 ------
-使用Qml开发
+### 开发环境
 
-开发环境windows 7，Qt 5.12.0
+使用Qt/Qml开发
+
+Windows 7，Qt 5.12.0
 
 ------
 `注意`传输的不是码流而是JPG图像
