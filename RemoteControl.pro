@@ -1,18 +1,22 @@
 QT += quick gui
 CONFIG += c++11
 
-DEFINES += USE_TCP#else use udp
+DEFINES += USE_TCP
+#else use udp
 
-#DEFINES += USE_D3E
+DEFINES += USE_GDI
+#DEFINES += USE_D3D
 
 INCLUDEPATH += ../RemoteControl/src
 
 HEADERS += \
+    src/framelesswindow.h \
     src/remoteevent.h \
     src/imageprovider.h \
     src/api.h
 
 SOURCES += \
+    src/framelesswindow.cpp \
     src/main.cpp \
     src/remoteevent.cpp \
     src/imageprovider.cpp \
