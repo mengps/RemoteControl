@@ -114,8 +114,7 @@ void Controlled::incomingConnection(qintptr socketDescriptor)
         QThread *thread = new QThread;
         connect(thread, &QThread::finished, thread, &QThread::deleteLater);
         m_controlled = new Socket;
-        connect(m_controlled, &Socket::stateChanged, this, [this](QAbstractSocket::SocketState socketState)
-        {
+        connect(m_controlled, &Socket::stateChanged, this, [this](QAbstractSocket::SocketState socketState) {
             switch (socketState)
             {
             case QAbstractSocket::ConnectedState:
@@ -125,8 +124,7 @@ void Controlled::incomingConnection(qintptr socketDescriptor)
                 break;
             }
         });
-        connect(m_controlled, &Socket::disconnected, this, [this]()
-        {
+        connect(m_controlled, &Socket::disconnected, this, [this]() {
             Socket *socket = m_controlled;
             m_controlled = nullptr;
             socket->deleteLater();
@@ -134,8 +132,7 @@ void Controlled::incomingConnection(qintptr socketDescriptor)
             m_timerId = 0;
             emit disconnected();
         });
-        connect(m_controlled, &Socket::hasEventData, this, [this](const RemoteEvent &event)
-        {
+        connect(m_controlled, &Socket::hasEventData, this, [this](const RemoteEvent &event) {
             processEvent(event);
         });
         m_controlled->setSocketDescriptor(socketDescriptor);

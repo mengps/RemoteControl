@@ -17,7 +17,6 @@ FramelessWindow {
     resizable: !mobile
     Component.onCompleted: {
         stackView.push(mainPage);
-        flags |= Qt.FramelessWindowHint;
     }
 
     property bool mobile: Qt.platform.os == "android";

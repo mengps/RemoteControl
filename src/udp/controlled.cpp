@@ -70,8 +70,7 @@ void Controlled::processEvent(const RemoteEvent &ev)
         SetCursorPos(point.x, point.y);
 
         //发送点击事件，按下+弹起为点击一次
-        for (int i = 0; i < clickCount; i++)
-        {
+        for (int i = 0; i < clickCount; i++) {
             mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
             mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
         }
@@ -181,6 +180,7 @@ QPixmap Controlled::grabScreen()
         LPD3DXBUFFER bufferedImage = nullptr;
         D3DXSaveSurfaceToFileInMemory(&bufferedImage, D3DXIFF_JPG, surface, nullptr, nullptr);
         screen.loadFromData((uchar *)bufferedImage->GetBufferPointer(), bufferedImage->GetBufferSize(), "JPG");
+        bufferedImage->Release();
         surface->Release();
     }
 #endif
