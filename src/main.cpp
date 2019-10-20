@@ -1,4 +1,4 @@
-#include "api.h"
+#include "networkapi.h"
 #include "controlled.h"
 #include "controller.h"
 #include "framelesswindow.h"
@@ -24,12 +24,12 @@ int main(int argc, char *argv[])
 
     qmlRegisterType<FramelessWindow>("an.window", 1, 0, "FramelessWindow");
 
-    Api *api = new Api;
+    NetworkApi *api = new NetworkApi;
     Controlled *controlled = new Controlled;
     Controller *controller = new Controller;
 
     QQmlApplicationEngine engine;
-    engine.rootContext()->setContextProperty("Api", api);
+    engine.rootContext()->setContextProperty("NetworkApi", api);
     engine.rootContext()->setContextProperty("controlled", controlled);
     engine.rootContext()->setContextProperty("controller", controller);
     engine.addImageProvider(QLatin1String("screen"), controller->getImageProvider());
