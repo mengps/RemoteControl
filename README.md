@@ -21,7 +21,7 @@
 
    DEFINES += USE_DXGI 或者 DEFINES += USE_GDI 或者 DEFINES += USE_D3D
 
-   因为DXGI仅在Windows 8以上提供，考虑到Windows 8的使用量，所以Windows 10以上可使用
+   因为DXGI仅在 Win8 以上提供，考虑到 Win8 的使用量，所以 Win10 以上可使用
 ```
 ------
 ### 关于Windows和Android
