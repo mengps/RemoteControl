@@ -43,13 +43,17 @@ Item {
     MouseArea {
         id: controllerArea
         anchors.fill: parent
-        onClicked: {
+        onPressed: {
             let ratio = Qt.point(mouse.x / root.width, mouse.y / root.height);
-            controller.mouseClicked(ratio);
+            controller.mousePressed(ratio);
         }
-        onDoubleClicked: {
+        onReleased: {
             let ratio = Qt.point(mouse.x / root.width, mouse.y / root.height);
-            controller.mouseDBClicked(ratio);
+            controller.mouseReleased(ratio);
+        }
+        onPositionChanged: {
+            let ratio = Qt.point(mouse.x / root.width, mouse.y / root.height);
+            controller.mouseMoved(ratio);
         }
     }
 }

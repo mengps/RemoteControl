@@ -21,7 +21,7 @@ FramelessWindow {
 
     property bool mobile: Qt.platform.os == "android";
     property bool connected: false;
-    property string localIpAddress: Api.getLocalIpAddress();
+    property string localIpAddress: NetworkApi.getLocalIpAddress();
 
     Connections {
         target: controlled
@@ -149,7 +149,6 @@ FramelessWindow {
 
                         Text {
                             id: remoteIpAddressText
-                            font.pointSize: 13
                             anchors.verticalCenter: parent.verticalCenter
                             text: qsTr("远程IP地址：")
                         }
@@ -162,7 +161,7 @@ FramelessWindow {
                             width: 150
                             height: parent.height
                             selectByMouse: true
-                            placeholderText: qsTr("输入IPv4 / IPv6 地址")
+                            placeholderText: qsTr("输入IPv4/IPv6地址")
                             background: Rectangle {
                                 radius: 6
                                 border.color: "#09A3DC"

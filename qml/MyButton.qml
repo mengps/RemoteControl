@@ -12,7 +12,7 @@ GlowRectangle {
     property alias fontSize: text.font.pointSize;
     property bool hovered: false;
     property int widthMargin: 10;
-    property int heightMargin: 4;
+    property int heightMargin: 6;
     property color textColor: text.color;
     property color hoverColor: "#A0A0A0";
 
@@ -24,7 +24,6 @@ GlowRectangle {
 
     Text {
         id: text
-        font.family: "微软雅黑"
         color: "#333"
         x: widthMargin
         y: heightMargin
