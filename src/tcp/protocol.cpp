@@ -8,7 +8,7 @@ QDataStream& operator>>(QDataStream &in, BlockHeader &header)
     return in;
 }
 
-QDataStream& operator<<(QDataStream &out, BlockHeader &header)
+QDataStream& operator<<(QDataStream &out, const BlockHeader &header)
 {
     out << header.type
         << header.dataSize;
@@ -24,7 +24,7 @@ QDataStream& operator>>(QDataStream &in, DataBlock &block)
     return in;
 }
 
-QDataStream& operator<<(QDataStream &out, DataBlock &block)
+QDataStream& operator<<(QDataStream &out, const DataBlock &block)
 {
     out << block.header
         << block.data;

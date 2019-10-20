@@ -37,9 +37,9 @@ struct DataBlock
 };
 
 extern QDataStream& operator>>(QDataStream &in, BlockHeader &header);
-extern QDataStream& operator<<(QDataStream &out, BlockHeader &header);
+extern QDataStream& operator<<(QDataStream &out, const BlockHeader &header);
 extern QDataStream& operator>>(QDataStream &in, DataBlock &block);
-extern QDataStream& operator<<(QDataStream &out, DataBlock &block);
+extern QDataStream& operator<<(QDataStream &out, const DataBlock &block);
 extern QDebug operator<<(QDebug debug, const BlockHeader &header);
 extern QDebug operator<<(QDebug debug, const DataBlock &block);
 

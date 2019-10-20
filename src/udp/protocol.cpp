@@ -1,7 +1,7 @@
 #include "protocol.h"
 #include "remoteevent.h"
 
-QDataStream &operator>>(QDataStream &in, ScreenDataBlock &block)
+QDataStream &operator>>(QDataStream &in, DataBlock &block)
 {
     in >> block.blockSize
        >> block.blockIndex
@@ -11,7 +11,7 @@ QDataStream &operator>>(QDataStream &in, ScreenDataBlock &block)
     return in;
 }
 
-QDataStream &operator<<(QDataStream &out, const ScreenDataBlock &block)
+QDataStream &operator<<(QDataStream &out, const DataBlock &block)
 {
     out << block.blockSize
         << block.blockIndex
@@ -40,7 +40,7 @@ QDataStream &operator<<(QDataStream &out, const RemoteEvent &block)
     return out;
 }
 
-QDebug operator<<(QDebug debug, const ScreenDataBlock &block)
+QDebug operator<<(QDebug debug, const DataBlock &block)
 {
     debug << "[blockSize]: "  << block.blockSize   << endl
           << "[blockIndex]: " << block.blockIndex  << endl
