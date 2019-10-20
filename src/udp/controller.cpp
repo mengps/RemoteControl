@@ -1,7 +1,7 @@
-#include "api.h"
 #include "controller.h"
 #include "connection.h"
 #include "imageprovider.h"
+#include "networkapi.h"
 #include "socket.h"
 
 #include <QGuiApplication>
@@ -36,14 +36,19 @@ void Controller::finish()
      QMetaObject::invokeMethod(m_socket, "finish");
 }
 
-void Controller::mouseClicked(const QPointF &position)
+void Controller::mousePressed(const QPointF &position)
 {
-    sendRemoteEvent(RemoteEvent::Click, position);
+    sendRemoteEvent(RemoteEvent::EventType::Pressed, position);
 }
 
-void Controller::mouseDBClicked(const QPointF &position)
+void Controller::mouseReleased(const QPointF &position)
 {
-    sendRemoteEvent(RemoteEvent::DoubleClick, position);
+    sendRemoteEvent(RemoteEvent::EventType::Released, position);
+}
+
+void Controller::mouseMoved(const QPointF &position)
+{
+    sendRemoteEvent(RemoteEvent::EventType::Moved, position);
 }
 
 void Controller::requestNewConnection(const QString &address)
@@ -51,7 +56,7 @@ void Controller::requestNewConnection(const QString &address)
     m_connection->abort();
     QHostAddress hostAddress(address);
     //有效且不为本机地址
-    if (!hostAddress.isNull() && !Api::isLocalAddress(hostAddress)){
+    if (!hostAddress.isNull() && !NetworkApi::isLocalAddress(hostAddress)){
         m_connection->connectToHost(address, 43801);
         QMetaObject::invokeMethod(m_socket, "setDestAddr", Q_ARG(QHostAddress, QHostAddress(address)));
     }

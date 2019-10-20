@@ -22,7 +22,7 @@ void Socket::abort()
     m_recvHeader.clear();
 }
 
-void Socket::writeToSocket(DataBlock block)
+void Socket::writeToSocket(const DataBlock &block)
 {
     QByteArray data;
     QDataStream out(&data, QIODevice::WriteOnly);

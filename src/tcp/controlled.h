@@ -29,8 +29,6 @@ protected:
     void incomingConnection(qintptr socketDescriptor);
 
 private:
-    QPixmap grabScreen();
-
     Socket *m_controlled = nullptr;
     int m_timerId = 0;
 };

@@ -30,7 +30,7 @@ void Connection::processRecvData()
 
     if (!event.isEmpty()) {
         //position会在前面加4字节
-        m_recvData.remove(0, sizeof (event.type()) + sizeof (event.position()) + 4);
+        m_recvData.remove(0, event.size());
         emit hasEventData(event);
     }
 

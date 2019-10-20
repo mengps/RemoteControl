@@ -5,7 +5,7 @@
 #include <QThread>
 #include <QTime>
 
-const int maxBlockSize = 4096;
+static const int maxBlockSize = 4096;
 
 Socket::Socket(QObject *parent)
     : QUdpSocket (parent)
@@ -28,7 +28,7 @@ void Socket::writeToSocket(const QByteArray &d)
     static QTime time = QTime::currentTime();
     static int frame = 0;
     if (time.msecsTo(QTime::currentTime()) > 1000) {
-        qDebug() << "发送速率：" << frame << " / s";
+        qDebug().nospace() << "发送速率：" << frame << "/s";
         frame = 0;
         time = QTime::currentTime();
     }
@@ -46,7 +46,7 @@ void Socket::writeToSocket(const QByteArray &d)
         out.setVersion(QDataStream::Qt_5_12);
 
         while (currentIndex < blockNum) {
-            ScreenDataBlock block;
+            DataBlock block;
             block.blockIndex = currentIndex + 1;
             block.blockNum = blockNum;
             block.blockSize = blockSize;
@@ -75,7 +75,7 @@ void Socket::processRecvData()
         QNetworkDatagram datagram = receiveDatagram();
         QByteArray data  = datagram.data();
 
-        ScreenDataBlock block;
+        DataBlock block;
         QDataStream in(&data, QIODevice::ReadOnly);
         in >> block;
 
