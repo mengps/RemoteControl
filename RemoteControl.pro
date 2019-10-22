@@ -4,23 +4,26 @@ CONFIG += c++11
 DEFINES += USE_TCP
 #else use udp
 
-DEFINES += USE_GDI
+#choose one of them USE_DXGI / USE_GDI / USE_D3D
+DEFINES += USE_DXGI
+#DEFINES += USE_GDI
 #DEFINES += USE_D3D
 
 INCLUDEPATH += ../RemoteControl/src
 
 HEADERS += \
     src/framelesswindow.h \
+    src/networkapi.h \
     src/remoteevent.h \
     src/imageprovider.h \
-    src/api.h
+    src/systemapi.h
 
 SOURCES += \
     src/framelesswindow.cpp \
     src/main.cpp \
-    src/remoteevent.cpp \
+    src/networkapi.cpp \
     src/imageprovider.cpp \
-    src/api.cpp
+    src/systemapi.cpp
 
 if (contains(DEFINES, USE_TCP)){
     message("Use Tcp")
@@ -57,18 +60,22 @@ if (contains(DEFINES, USE_TCP)){
 }
 
 win32{
-    message("win32")
+    message("Platform: Win32")
+    QT += winextras
+    LIBS += -lGdi32
     RC_ICONS += image/winIcon.ico
     contains(DEFINES, USE_D3D){
-        QT += winextras
+        message("Duplication interface: D3D")
+        HEADERS += src/dxgimanager.h
         LIBS += -ld3d9 -lD3dx9
     }
-    contains(DEFINES, USE_GDI){
-        QT += winextras
-        LIBS += -lGdi32
+    contains(DEFINES, USE_DXGI){
+        message("Duplication interface: DXGI")
+        SOURCES += src/dxgimanager.cpp
+        LIBS += -lD3D11 -lDXGI
     }
 }else{
-    message ("android")
+    message ("Platform: Android")
 }
 
 # The following define makes your compiler emit warnings if you use
@@ -85,12 +92,6 @@ DEFINES += QT_DEPRECATED_WARNINGS
 RESOURCES += \
     qml.qrc \
     image.qrc
-
-# Additional import path used to resolve QML modules in Qt Creator's code model
-QML_IMPORT_PATH =
-
-# Additional import path used to resolve QML modules just for Qt Quick Designer
-QML_DESIGNER_IMPORT_PATH =
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
