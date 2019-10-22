@@ -97,6 +97,6 @@ void Controlled::incomingConnection(qintptr socketDescriptor)
                                   Q_ARG(QHostAddress, QHostAddress(m_connection->peerAddress())));
 
         if (!m_timerId)
-            m_timerId = startTimer(std::chrono::milliseconds(40));
+            m_timerId = startTimer(std::chrono::milliseconds(30));
     }
 }

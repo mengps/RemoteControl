@@ -84,5 +84,3 @@ void Socket::processRecvBlock()
     if (m_recvData.size() > 0)  //如果还有则继续处理
         processRecvBlock();
 }
-
-

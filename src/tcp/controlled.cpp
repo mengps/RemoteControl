@@ -6,6 +6,7 @@
 #include <QBuffer>
 #include <QGuiApplication>
 #include <QScreen>
+#include <QTime>
 #include <QThread>
 
 Controlled::Controlled(QObject *parent)
@@ -55,7 +56,9 @@ void Controlled::timerEvent(QTimerEvent *event)
     if (m_controlled) {
         QBuffer buffer;
         buffer.open(QIODevice::WriteOnly);
+        QTime time = QTime::currentTime();
         QPixmap pixmap = SystemApi::grabScreen();
+        qDebug() << time.msecsTo(QTime::currentTime());
         pixmap.save(&buffer, "jpg", -1);
         BlockHeader header = { SCREEN_TYPE, qint32(buffer.size()) };
         DataBlock data = { header, buffer.data() };
@@ -96,6 +99,6 @@ void Controlled::incomingConnection(qintptr socketDescriptor)
         thread->start();
 
         if (!m_timerId)
-            m_timerId = startTimer(std::chrono::milliseconds(40));
+            m_timerId = startTimer(std::chrono::milliseconds(30));
     }
 }
