@@ -1,8 +1,10 @@
 #include "systemapi.h"
 
 #include <QCursor>
+#include <QDebug>
 #include <QGuiApplication>
 #include <QPainter>
+#include <QWindow>
 #include <QScreen>
 
 #ifdef Q_OS_WIN
@@ -12,6 +14,8 @@
 #   include <QtWin>
 #   include <d3d9.h>
 #   include <d3dx9tex.h>
+#  elif defined (USE_DXGI) && defined (_WIN32_WINNT_WIN10)
+#   include "dxgimanager.h"
 #  endif
 #endif
 
@@ -103,13 +107,26 @@ QPixmap SystemApi::grabScreen()
     DeleteObject(bitmap);
     ReleaseDC(nullptr, display_dc);
 #elif defined (USE_DXGI) && defined (Q_OS_WIN) && defined (_WIN32_WINNT_WIN10)
-
-
+    static DxgiManager dxgiManager;
+    static bool dxgiInit = false;
+    if (!dxgiInit) {
+        if (!dxgiManager.init()) {
+            qDebug() << "DXGI Init Error :" << dxgiManager.lastError();
+        } else {
+            dxgiInit = true;
+            screen = dxgiManager.grabScreen();
+        }
+    } else {
+         screen = dxgiManager.grabScreen();
+    }
 #else
     screen = QGuiApplication::primaryScreen()->grabWindow(0);
 #endif
-    QPainter painter(&screen);
-    painter.drawPixmap(QCursor::pos(), grabCursor());
+    if (!screen.isNull()) {
+        QPainter painter(&screen);
+        painter.drawPixmap(QCursor::pos(), grabCursor());
+    }
+
     return screen;
 }
 
