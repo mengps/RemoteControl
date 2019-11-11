@@ -36,7 +36,7 @@ void Socket::writeToSocket(const RemoteEvent &event)
     QByteArray data;
     QDataStream out(&data, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_12);
-    out << qint32(event.type()) << event.position();
+    out << event;
     BlockHeader header = { EVENT_TYPE, data.size() };
     DataBlock block = { header, data };
     out.device()->seek(0);
@@ -72,12 +72,10 @@ void Socket::processRecvBlock()
     if (block.header.type == SCREEN_TYPE) {
         emit hasScreenData(block.data);
     } else if (block.header.type == EVENT_TYPE) {
-        qint32 type;
-        QPointF position;
+        RemoteEvent event;
         QDataStream in(block.data);
         in.setVersion(QDataStream::Qt_5_12);
-        in >> type >> position;
-        RemoteEvent event(RemoteEvent::EventType(type), position);
+        in >> event;
         emit hasEventData(event);
     }
 

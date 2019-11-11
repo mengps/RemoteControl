@@ -68,8 +68,7 @@ void Controlled::timerEvent(QTimerEvent *event)
 
 void Controlled::incomingConnection(qintptr socketDescriptor)
 {
-    if (!m_controlled)
-    {
+    if (!m_controlled) {
         QThread *thread = new QThread;
         connect(thread, &QThread::finished, thread, &QThread::deleteLater);
         m_controlled = new Socket;

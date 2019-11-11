@@ -1,4 +1,5 @@
 #include "protocol.h"
+#include "remoteevent.h"
 
 QDataStream& operator>>(QDataStream &in, BlockHeader &header)
 {
@@ -28,6 +29,25 @@ QDataStream& operator<<(QDataStream &out, const DataBlock &block)
 {
     out << block.header
         << block.data;
+
+    return out;
+}
+
+QDataStream &operator>>(QDataStream &in, RemoteEvent &block)
+{
+    qint32 type;
+    QPointF position;
+    in >> type >> position;
+    block.setType(RemoteEvent::EventType(type));
+    block.setPosition(position);
+
+    return in;
+}
+
+QDataStream &operator<<(QDataStream &out, const RemoteEvent &block)
+{
+    out << qint32(block.type())
+        << block.position();
 
     return out;
 }

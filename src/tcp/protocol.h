@@ -36,10 +36,14 @@ struct DataBlock
     QByteArray data;
 };
 
+class RemoteEvent;
+
 extern QDataStream& operator>>(QDataStream &in, BlockHeader &header);
 extern QDataStream& operator<<(QDataStream &out, const BlockHeader &header);
 extern QDataStream& operator>>(QDataStream &in, DataBlock &block);
 extern QDataStream& operator<<(QDataStream &out, const DataBlock &block);
+extern QDataStream &operator>>(QDataStream &in, RemoteEvent &event);
+extern QDataStream &operator<<(QDataStream &out, const RemoteEvent &event);
 extern QDebug operator<<(QDebug debug, const BlockHeader &header);
 extern QDebug operator<<(QDebug debug, const DataBlock &block);
 
