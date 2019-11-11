@@ -130,7 +130,7 @@ bool DxgiManager::init()
     m_duplication->GetDesc(&desc);
     m_texture = new DxgiTextureStaging(d3dDevice, d3dContext);
     if (desc.DesktopImageInSystemMemory) {
-        qDebug() << "Dsc: CPU shared with GPU";
+        qDebug() << "Desc: CPU shared with GPU";
     } else {
         qDebug() << "Desc: CPU not shared with GPU";
     }
