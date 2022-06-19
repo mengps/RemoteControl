@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<RCC>
+    <qresource prefix="/">
+        <file alias="qml/main.qml">qml/main.qml</file>
+        <file alias="qml/GlowRectangle.qml">qml/GlowRectangle.qml</file>
+        <file alias="qml/MyButton.qml">qml/MyButton.qml</file>
+        <file alias="qml/MyToolTip.qml">qml/MyToolTip.qml</file>
+        <file alias="qml/ControlledPage.qml">qml/ControlledPage.qml</file>
+        <file alias="qml/ControllerPage.qml">qml/ControllerPage.qml</file>
+        <file alias="qml/MySystemTray.qml">qml/MySystemTray.qml</file>
+    </qresource>
+</RCC>

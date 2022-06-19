@@ -147,11 +147,16 @@ QPixmap DxgiManager::grabScreen()
 {
     IDXGIResource *desktopRes;
     DXGI_OUTDUPL_FRAME_INFO frameInfo;
-    m_duplication->ReleaseFrame();
-    HRESULT hr = m_duplication->AcquireNextFrame(100, &frameInfo, &desktopRes);
-    if (FAILED(hr)) {
-        m_lastError = "Failed to AcquireNextFrame ErrorCode = " + QString::number(uint(hr), 16);
-        return QPixmap();
+    while (true) {
+        HRESULT hr = m_duplication->AcquireNextFrame(100, &frameInfo, &desktopRes);
+        if (FAILED(hr)) {
+            m_lastError = "Failed to AcquireNextFrame ErrorCode = " + QString::number(uint(hr), 16);
+            return QPixmap();
+        }
+
+        if (frameInfo.LastPresentTime.QuadPart) break;
+
+        m_duplication->ReleaseFrame();
     }
 
     return m_texture->copyToImage(desktopRes);
